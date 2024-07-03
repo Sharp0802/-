@@ -8,6 +8,8 @@ namespace tron
     {
         bool        _bad;
         GLFWwindow* _window;
+        int         _width;
+        int         _height;
 
     public:
         GLFW();
@@ -16,6 +18,11 @@ namespace tron
 
         [[nodiscard]]
         GLFWwindow* GetWindow() const;
+
+        void Update();
+
+        [[nodiscard]]
+        std::pair<int, int> GetSize() const;
 
         bool operator!() const;
     };

@@ -63,12 +63,13 @@ int main()
 
     while (!glfwWindowShouldClose(glfw.GetWindow()))
     {
+        glfw.Update();
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glUseProgram(program);
+        glClearColor(0, .3, .7, 1);
+
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 3);
-        glfwPollEvents();
-        glfwSwapBuffers(glfw.GetWindow());
     }
 
     return 0;

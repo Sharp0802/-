@@ -1,9 +1,38 @@
 #include "glfw.h"
 
+#include "log.h"
+
+namespace
+{
+    void UpdateFPSCounter(GLFWwindow* window)
+    {
+        static double prev = glfwGetTime();
+        static int cFPS;
+
+        double current = glfwGetTime();
+        double elapsed = current - prev;
+
+        if (elapsed > 0.25)
+        {
+            glfwSetWindowTitle(window, std::format("{:.2f}", cFPS / elapsed).data());
+
+            prev = current;
+            cFPS = 0;
+        }
+
+        cFPS++;
+    }
+}
+
+
 namespace tron
 {
     GLFW::GLFW()
     {
+        glfwSetErrorCallback([] (int code, const char* desc) {
+            perr("GLFW ({}): {}", code, desc);
+        });
+
         if (!glfwInit())
         {
             std::println(std::cerr, "couldn't start GLFW3");
@@ -24,6 +53,14 @@ namespace tron
         }
         glfwMakeContextCurrent(_window);
 
+        glfwSetWindowUserPointer(_window, this);
+        glfwSetWindowSizeCallback(_window, [](GLFWwindow* window, const int width, const int height)
+        {
+            const auto this_ = static_cast<GLFW*>(glfwGetWindowUserPointer(window));
+            this_->_width  = width;
+            this_->_height = height;
+        });
+
         _bad = false;
     }
 
@@ -35,6 +72,22 @@ namespace tron
     GLFWwindow* GLFW::GetWindow() const
     {
         return _window;
+    }
+
+    void GLFW::Update()
+    {
+        glfwSwapBuffers(_window);
+        glfwPollEvents();
+
+        UpdateFPSCounter(_window);
+
+        auto [width, height] = GetSize();
+        glViewport(0, 0, width, height);
+    }
+
+    std::pair<int, int> GLFW::GetSize() const
+    {
+        return std::make_pair(_width, _height);
     }
 
     bool GLFW::operator!() const
