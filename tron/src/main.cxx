@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "glew.h"
 #include "glfw.h"
-#include "log.h"
-
+#include "global.h"
+#include "shader.h"
 
 int main(int, char* argv[])
 {
@@ -35,32 +35,18 @@ int main(int, char* argv[])
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
-    const char* vsha =
-"#version 400\n"
-"layout(location = 0) in vec3 vp;"
-"void main() {"
-"  gl_Position = vec4(vp, 1.0);"
-"}";
 
-    const char* fsha =
-"#version 400\n"
-"out vec4 frag_colour;"
-"void main() {"
-"  frag_colour = vec4(0.5, 0.0, 0.5, 1.0);"
-"}";
+    const tron::Program program{
+        { "assets/sample.vert", tron::ST_Vertex },
+        { "assets/sample.frag", tron::ST_Fragment },
+    };
+    if (!program)
+    {
+        perr("Couldn't load GL program");
+        return 1;
+    }
 
-    GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vs, 1, &vsha, nullptr);
-    glCompileShader(vs);
-
-    GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fs, 1, &fsha, nullptr);
-    glCompileShader(fs);
-
-    GLuint program = glCreateProgram();
-    glAttachShader(program, fs);
-    glAttachShader(program, vs);
-    glLinkProgram(program);
+    program.Use();
 
     while (!glfwWindowShouldClose(glfw.GetWindow()))
     {
