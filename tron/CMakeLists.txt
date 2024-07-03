@@ -7,6 +7,7 @@ find_package(glfw3  REQUIRED)
 file(GLOB SOURCES src/*.cxx)
 file(GLOB HEADERS *.h)
 
+add_compile_options(-stdlib=libc++ -fmacro-prefix-map=${CMAKE_CURRENT_LIST_DIR}=.)
 add_executable(tron ${SOURCES} ${HEADERS})
 set_target_properties(tron PROPERTIES
     CXX_STANDARD 26
@@ -23,4 +24,7 @@ target_link_libraries(tron PRIVATE
         OpenGL::OpenGL
         GLEW::GLEW
         glfw
+        #
+        c++
+        c++abi
 )
