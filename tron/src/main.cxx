@@ -4,9 +4,10 @@
 #include "log.h"
 
 
-
-int main()
+int main(int, char* argv[])
 {
+    tron::Global::Path = std::filesystem::path(argv[0]).parent_path();
+
     tron::GLFW glfw;
     if (!glfw)
         return 1;
