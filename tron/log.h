@@ -5,10 +5,10 @@
 
 #define pout(...) std::println(                                 \
     std::cout,                                                  \
-    "[INF/" __TIME__ "/" __FILE__ ":" as_string_(__LINE__) "] " \
+    "[INF/" __FILE__ ":" as_string_(__LINE__) "] " \
     __VA_ARGS__)
 
 #define perr(...) std::println(                                 \
     std::cerr,                                                  \
-    "[ERR/" __TIME__ "/" __FILE__ ":" as_string_(__LINE__) "] " \
+    "[ERR/" __FILE__ ":" as_string_(__LINE__) "] " \
     __VA_ARGS__)
