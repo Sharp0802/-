@@ -28,33 +28,25 @@ int main()
     glBufferData(GL_ARRAY_BUFFER, sizeof points, points, GL_STATIC_DRAW);
 
     GLuint vao = 0;
-    glGenBuffers(1, &vao);
+    glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
-    const char* vsha = R"(
-#version 400 core
+    const char* vsha =
+"#version 400\n"
+"layout(location = 0) in vec3 vp;"
+"void main() {"
+"  gl_Position = vec4(vp, 1.0);"
+"}";
 
-in vec3 vp;
-
-void main()
-{
-    gl_Position = vec4(vp, 1.0);
-}
-)";
-
-    const char* fsha = R"(
-#version 400 core
-
-in vec4 colour;
-
-void main()
-{
-    colour = vec4(0.5, 0.0, 0.5, 1.0);
-}
-)";
+    const char* fsha =
+"#version 400\n"
+"out vec4 frag_colour;"
+"void main() {"
+"  frag_colour = vec4(0.5, 0.0, 0.5, 1.0);"
+"}";
 
     GLuint vs = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vs, 1, &vsha, nullptr);
