@@ -18,6 +18,7 @@ target_link_libraries(tron PRIVATE
         # SUBMODULES
         glm::glm
         stb
+        soil
         # PACKAGES
         OpenGL::GL
         OpenGL::GLU
