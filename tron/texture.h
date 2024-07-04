@@ -16,5 +16,7 @@ namespace tron
 
     public:
         Texture(const std::string& path, TextureFlag flags);
+
+        void Use() const;
     };
 }

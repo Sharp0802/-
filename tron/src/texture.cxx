@@ -17,4 +17,9 @@ namespace tron
             SOIL_CREATE_NEW_ID,
             flags);
     }
+
+    void Texture::Use() const
+    {
+        glBindTexture(GL_TEXTURE_2D, *_texture);
+    }
 }
