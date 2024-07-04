@@ -27,11 +27,7 @@ namespace tron
         const ShaderType   type)
         : _shader(CreateShader(type)), _type(type)
     {
-        const std::filesystem::path base(Global::Path);
-        const std::filesystem::path file(path);
-
-        const auto fullname = base / file;
-
+        auto fullname = Global::GetPath(path);
 
         std::ifstream ifs;
         ifs.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -41,7 +37,7 @@ namespace tron
         }
         catch (std::ios_base::failure& e)
         {
-            perr("[{}] while reading '{}': {}", *_shader, fullname.string(), e.what());
+            perr("[{}] while reading '{}': {}", *_shader, fullname, e.what());
             _bad = true;
             return;
         }
