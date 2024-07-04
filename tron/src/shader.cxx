@@ -48,7 +48,7 @@ namespace tron
         ifs.seekg(0, std::ios::beg);
 
         std::vector<char> buffer(fsize);
-        ifs.read(buffer.data(), fsize);
+        ifs.read(buffer.data(), static_cast<size_t>(fsize) - 1 /* why? */);
 
         const char* pbuffer = buffer.data();
         glShaderSource(*_shader, 1, &pbuffer, nullptr);
