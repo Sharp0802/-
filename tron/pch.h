@@ -11,6 +11,8 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/transform.hpp>
 
+#include <SOIL/SOIL.h>
+
 #include <algorithm>
 #include <cstdint>
 #include <filesystem>
