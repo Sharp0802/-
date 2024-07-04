@@ -4,3 +4,6 @@
 [submodule "sub/stb"]
 	path = sub/stb
 	url = https://github.com/nothings/stb
+[submodule "sub/soil"]
+	path = sub/soil
+	url = https://github.com/Sharp0802/soil
