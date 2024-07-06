@@ -7,6 +7,7 @@ A simple game with OpenGL 4, written in C++26.
 - CMake 3.27
 - LLVM/Clang 18 or above (with `libc++` if not on Windows)
 - OpenGL
+- GLEW (on non-Windows platforms)
 
 ## Requirements
 

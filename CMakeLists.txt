@@ -11,6 +11,7 @@ else ()
     link_libraries(c++ c++abi)
 endif ()
 
+add_subdirectory(cmake/glew)
 add_subdirectory(cmake/stb)
 add_subdirectory(sub/glfw)
 add_subdirectory(sub/glm)
