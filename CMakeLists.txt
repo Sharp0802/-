@@ -6,10 +6,8 @@ include(useClang)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
-else ()
-    add_compile_options(-stdlib=libc++)
-    link_libraries(c++ c++abi)
 endif ()
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-stdlib=libc++>)
 
 set(GLFW_LIBRARY_TYPE STATIC)
 set(SOIL_LIBRARY_TYPE STATIC)
