@@ -14,14 +14,12 @@ target_compile_options(tron PRIVATE -fmacro-prefix-map=${CMAKE_CURRENT_LIST_DIR}
 target_include_directories(tron PRIVATE .)
 target_precompile_headers(tron PRIVATE pch.h)
 target_link_libraries(tron PRIVATE
-        # SUBMODULES
-        glm::glm
-        stb
-        soil
-        # PACKAGES
-        OpenGL::GL
         GLEW::GLEW
         glfw
+        glm::glm
+        OpenGL::GL
+        soil
+        stb
 )
 
 add_custom_command(TARGET tron POST_BUILD
@@ -32,7 +30,7 @@ add_custom_command(TARGET tron POST_BUILD
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_custom_command(TARGET tron POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
             $<TARGET_FILE:GLEW::GLEW> "${CMAKE_CURRENT_BINARY_DIR}"
     )
 endif ()
