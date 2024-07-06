@@ -29,3 +29,10 @@ add_custom_command(TARGET tron POST_BUILD
         "${CMAKE_CURRENT_SOURCE_DIR}/assets"
         "${CMAKE_CURRENT_BINARY_DIR}/assets"
 )
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    add_custom_command(TARGET tron POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:GLEW::GLEW> "${CMAKE_CURRENT_BINARY_DIR}"
+    )
+endif ()

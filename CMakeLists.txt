@@ -11,6 +11,9 @@ else ()
     link_libraries(c++ c++abi)
 endif ()
 
+set(GLFW_LIBRARY_TYPE STATIC)
+set(SOIL_LIBRARY_TYPE STATIC)
+
 add_subdirectory(cmake/glew)
 add_subdirectory(cmake/stb)
 add_subdirectory(sub/glfw)
