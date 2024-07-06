@@ -7,7 +7,7 @@
 
 int main(int, char* argv[])
 {
-    tron::Global::Path = std::filesystem::path(argv[0]).parent_path();
+    tron::Global::Path = std::filesystem::path(argv[0]).parent_path().string();
 
     tron::GLFW glfw;
     if (!glfw)

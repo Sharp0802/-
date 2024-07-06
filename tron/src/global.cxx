@@ -8,6 +8,6 @@ namespace tron
     {
         const std::filesystem::path root = Path;
         const std::filesystem::path local_ = local;
-        return root / local_;
+        return (root / local_).string();
     }
 }
