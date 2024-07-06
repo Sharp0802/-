@@ -1,6 +1,6 @@
 #pragma once
 
-#define GLM_CONFIG_SWIZZLE GLM_SWIZZLE_FUNCTION
+#define GLM_FORCE_SWIZZLE
 #define GLM_ENABLE_EXPERIMENTAL
 
 #include <GL/glew.h>
