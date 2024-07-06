@@ -21,8 +21,6 @@ target_link_libraries(tron PRIVATE
         soil
         # PACKAGES
         OpenGL::GL
-        OpenGL::GLU
-        OpenGL::OpenGL
         GLEW::GLEW
         glfw
         #
