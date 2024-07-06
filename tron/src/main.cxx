@@ -42,9 +42,8 @@ int main(int, char* argv[])
     tron::Buffer ebo(tron::BT_ElementArray, tron::BP_Static | tron::BP_Draw);
     ebo.BufferData(indices, sizeof indices);
 
-    tron::VertexArray vao;
     vbo.Use();
-    vao.Register<glm::vec3, glm::vec3, glm::vec2>();
+    const auto vao = tron::VertexArray::Create<glm::vec3, glm::vec3, glm::vec2>();
 
 
     const tron::Program program{

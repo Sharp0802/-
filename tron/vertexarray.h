@@ -10,17 +10,18 @@ namespace tron
     {
         std::shared_ptr<GLuint> _array;
 
-    public:
         VertexArray();
 
+    public:
         void Use() const;
 
         template<typename... T>
-        void Register()
+        static VertexArray Create()
         {
             constexpr size_t stride = (sizeof(T) + ...);
 
-            Use();
+            VertexArray vao;
+            vao.Use();
 
             size_t index = 0;
             size_t padding = 0;
@@ -38,6 +39,8 @@ namespace tron
                 padding += GLType<T>::Size;
                 index++;
             }(), ...);
+
+            return vao;
         }
     };
 }
