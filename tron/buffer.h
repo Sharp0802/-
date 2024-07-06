@@ -6,15 +6,15 @@ namespace tron
 {
     enum BufferType
     {
-        BT_Array        = 0x8892,
-        BT_ElementArray = 0x8893
+        BT_Array        = GL_ARRAY_BUFFER,
+        BT_ElementArray = GL_ELEMENT_ARRAY_BUFFER
     };
 
     enum BufferPolicy
     {
-        BP_Dynamic = 0x88E8,
-        BP_Static  = 0x88E4,
-        BP_Stream  = 0x88E0,
+        BP_Dynamic = GL_DYNAMIC_DRAW,
+        BP_Static  = GL_STATIC_DRAW,
+        BP_Stream  = GL_STREAM_DRAW,
 
         BP_Draw = 0,
         BP_Read = 1,
@@ -28,7 +28,7 @@ namespace tron
         std::shared_ptr<GLuint> _buffer;
 
     public:
-        Buffer(BufferType type, BufferPolicy policy);
+        Buffer(BufferType type, std::underlying_type_t<BufferPolicy> policy);
 
         void BufferData(const void* data, size_t size);
 

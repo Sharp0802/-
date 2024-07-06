@@ -1,3 +1,4 @@
+#include "buffer.h"
 #include "pch.h"
 #include "glew.h"
 #include "glfw.h"
@@ -34,20 +35,17 @@ int main(int, char* argv[])
 
     tex.Use();
 
-    GLuint vbo = 0;
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof points, points, GL_STATIC_DRAW);
+    tron::Buffer vbo(tron::BT_Array, tron::BP_Static | tron::BP_Draw);
+    vbo.BufferData(points, sizeof points);
 
-    GLuint ebo = 0;
-    glGenBuffers(1, &ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof indices, indices, GL_STATIC_DRAW);
+    tron::Buffer ebo(tron::BT_ElementArray, tron::BP_Static | tron::BP_Draw);
+    ebo.BufferData(indices, sizeof indices);
 
     GLuint vao = 0;
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+    vbo.Use();
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
@@ -79,7 +77,7 @@ int main(int, char* argv[])
         glClearColor(0, .3, .7, 1);
 
         glBindVertexArray(vao);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+        ebo.Use();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
     }
 
