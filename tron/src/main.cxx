@@ -5,6 +5,7 @@
 #include "global.h"
 #include "shader.h"
 #include "texture.h"
+#include "vertexarray.h"
 
 int main(int, char* argv[])
 {
@@ -41,20 +42,9 @@ int main(int, char* argv[])
     tron::Buffer ebo(tron::BT_ElementArray, tron::BP_Static | tron::BP_Draw);
     ebo.BufferData(indices, sizeof indices);
 
-    GLuint vao = 0;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
+    tron::VertexArray vao;
     vbo.Use();
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), nullptr);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+    vao.Register<glm::vec3, glm::vec3, glm::vec2>();
 
 
     const tron::Program program{
@@ -76,7 +66,7 @@ int main(int, char* argv[])
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0, .3, .7, 1);
 
-        glBindVertexArray(vao);
+        vao.Use();
         ebo.Use();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
     }
