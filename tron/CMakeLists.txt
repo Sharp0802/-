@@ -31,7 +31,7 @@ add_custom_command(TARGET tron POST_BUILD
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_custom_command(TARGET tron POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            $<TARGET_FILE:GLEW::GLEW> "${CMAKE_CURRENT_BINARY_DIR}"
+            $<TARGET_PROPERTY:GLEW::GLEW,IMPORTED_IMPLIB> "${CMAKE_CURRENT_BINARY_DIR}"
     )
 else ()
     target_link_libraries(tron PRIVATE
