@@ -2,7 +2,6 @@ project(tron)
 
 find_package(OpenGL REQUIRED)
 find_package(GLEW   REQUIRED)
-find_package(glfw3  REQUIRED)
 
 file(GLOB SOURCES src/*.cxx)
 file(GLOB HEADERS *.h)

@@ -12,6 +12,7 @@ else ()
 endif ()
 
 add_subdirectory(cmake/stb)
+add_subdirectory(sub/glfw)
 add_subdirectory(sub/glm)
 add_subdirectory(sub/soil)
 add_subdirectory(tron)

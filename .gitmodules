@@ -7,3 +7,6 @@
 [submodule "sub/soil"]
 	path = sub/soil
 	url = https://github.com/Sharp0802/soil
+[submodule "sub/glfw"]
+	path = sub/glfw
+	url = https://github.com/glfw/glfw
