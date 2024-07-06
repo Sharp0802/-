@@ -33,4 +33,9 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             $<TARGET_FILE:GLEW::GLEW> "${CMAKE_CURRENT_BINARY_DIR}"
     )
+else ()
+    target_link_libraries(tron PRIVATE
+            c++
+            c++abi
+    )
 endif ()
