@@ -4,8 +4,12 @@ A simple game with OpenGL 4, written in C++26.
 
 ## Prerequisites
 
+> [!NOTE]
+> MSYS2 is required to build on Windows
+> (Tested on MSYS2/Clang64)
+
 - CMake 3.27
-- LLVM/Clang 18 or above (with `libc++` if not on Windows)
+- LLVM/Clang 18 or above (with `libc++`)
 - OpenGL
 - GLEW (on non-Windows platforms)
 
