@@ -65,6 +65,23 @@ int main(int, char* argv[])
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0, .3, .7, 1);
 
+
+
+
+        auto model = glm::mat4(1.f);
+        model = glm::translate(model, glm::vec3(0, sin(glfwGetTime()) * 0.1f, 0));
+        model = glm::rotate(model, static_cast<float>(glfwGetTime()), glm::vec3(0.0f, 1.0f, 0.0f));
+
+        glm::mat4 view = glm::mat4(1.0f);
+        // note that we're translating the scene in the reverse direction of where we want to move
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+        glm::mat4 projection;
+        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+
+        program.GetUniform<glm::mat4>("vTransform") = projection * view * model;
+
         vao.Use();
         ebo.Use();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
