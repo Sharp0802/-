@@ -23,7 +23,7 @@ add_executable(tron ${SOURCES} ${HEADERS})
 set_target_properties(tron PROPERTIES
     CXX_STANDARD 26
 )
-target_compile_options(tron PRIVATE -fmacro-prefix-map=${CMAKE_CURRENT_LIST_DIR}=.)
+target_compile_options(tron PRIVATE -fmacro-prefix-map=${CMAKE_CURRENT_LIST_DIR}=. -fdeclspec -fms-extensions)
 target_include_directories(tron PRIVATE .)
 target_precompile_headers(tron PRIVATE pch.h)
 target_link_libraries(tron PRIVATE
