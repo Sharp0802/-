@@ -1,7 +1,8 @@
 #pragma once
 
-#include "log.h"
 #include "pch.h"
+#include "log.h"
+#include "uniform.h"
 
 namespace tron
 {
@@ -40,5 +41,11 @@ namespace tron
         bool operator!() const;
 
         void Use() const;
+
+        template<typename T>
+        Uniform<T> GetUniform(const std::string& name)
+        {
+            return Uniform<T>(glGetUniformLocation(*_program, name.data()));
+        }
     };
 }
