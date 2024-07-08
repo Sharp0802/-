@@ -5,6 +5,7 @@
 #include "global.h"
 #include "shader.h"
 #include "texture.h"
+#include "transform.h"
 #include "vertexarray.h"
 
 int main(int, char* argv[])
@@ -66,11 +67,9 @@ int main(int, char* argv[])
         glClearColor(0, .3, .7, 1);
 
 
-
-
-        auto model = glm::mat4(1.f);
-        model = glm::translate(model, glm::vec3(0, sin(glfwGetTime()) * 0.1f, 0));
-        model = glm::rotate(model, static_cast<float>(glfwGetTime()), glm::vec3(0.0f, 1.0f, 0.0f));
+        tron::Transform transform;
+        transform.Position = { 0, sin(glfwGetTime()) * 0.1f, 0 };
+        transform.Rotation = { glm::vec3(0, static_cast<float>(glfwGetTime()), 0) };
 
         glm::mat4 view = glm::mat4(1.0f);
         // note that we're translating the scene in the reverse direction of where we want to move
@@ -80,7 +79,7 @@ int main(int, char* argv[])
         projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
 
-        program.GetUniform<glm::mat4>("vTransform") = projection * view * model;
+        program.GetUniform<glm::mat4>("vTransform") = projection * view * static_cast<glm::mat4>(transform);
 
         vao.Use();
         ebo.Use();
