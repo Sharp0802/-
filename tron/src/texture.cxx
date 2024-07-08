@@ -15,7 +15,7 @@ namespace tron
             Global::GetPath(path).data(),
             SOIL_LOAD_AUTO,
             SOIL_CREATE_NEW_ID,
-            flags);
+            flags ^ static_cast<int>(SOIL_FLAG_INVERT_Y));
     }
 
     void Texture::Use() const
