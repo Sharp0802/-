@@ -43,7 +43,8 @@ namespace tron
         void Use() const;
 
         template<typename T>
-        Uniform<T> GetUniform(const std::string& name)
+        [[nodiscard]]
+        Uniform<T> GetUniform(const std::string& name) const
         {
             return Uniform<T>(glGetUniformLocation(*_program, name.data()));
         }

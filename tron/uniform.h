@@ -9,7 +9,7 @@ namespace tron
     template<typename T>
     void glUniform(GLint loc, T value);
 
-#define TRON_GL_UNIFORM(type, f, ...) template<> void glUniform<type>(GLint loc, type v) { f(loc, __VA_ARGS__); }
+#define TRON_GL_UNIFORM(type, f, ...) template<> inline void glUniform<type>(GLint loc, type v) { f(loc, __VA_ARGS__); }
 
     TRON_GL_UNIFORM(int, glUniform1i, v);
     TRON_GL_UNIFORM(unsigned int, glUniform1ui, v);
