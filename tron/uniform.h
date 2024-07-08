@@ -19,14 +19,15 @@ namespace tron
     TRON_GL_UNIFORM(glm::vec3, glUniform3f, v.x, v.y, v.z);
     TRON_GL_UNIFORM(glm::vec4, glUniform4f, v.x, v.y, v.z, v.w);
 
-#define TRON_GL_UNIFORM_MATRIX(c, r) TRON_GL_UNIFORM(glm::mat##c##x##r, glUniformMatrix2fv, 1, GL_FALSE, glm::value_ptr(v))
+#define TRON_GL_UNIFORM_MATRIX(c, r) TRON_GL_UNIFORM(glm::mat##c##x##r, glUniformMatrix##c##x##r##fv, 1, GL_FALSE, glm::value_ptr(v))
+#define TRON_GL_UNIFORM_MATRIX_R(r) TRON_GL_UNIFORM(glm::mat##r, glUniformMatrix##r##fv, 1, GL_FALSE, glm::value_ptr(v))
 
-    TRON_GL_UNIFORM_MATRIX(2, 2)
+    TRON_GL_UNIFORM_MATRIX_R(2)
     TRON_GL_UNIFORM_MATRIX(2, 3)
     TRON_GL_UNIFORM_MATRIX(2, 4)
-    TRON_GL_UNIFORM_MATRIX(3, 3)
+    TRON_GL_UNIFORM_MATRIX_R(3)
     TRON_GL_UNIFORM_MATRIX(3, 4)
-    TRON_GL_UNIFORM_MATRIX(4, 4)
+    TRON_GL_UNIFORM_MATRIX_R(4)
 
 #undef TRON_GL_UNIFORM_MATRIX
 #undef TRON_GL_UNIFORM
