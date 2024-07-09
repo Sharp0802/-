@@ -21,6 +21,8 @@ int main(int, char* argv[])
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #define H 0.5f
 
 
@@ -100,6 +102,11 @@ int main(int, char* argv[])
 
     while (!glfwWindowShouldClose(glfw.GetWindow()))
     {
+        static float last;
+        const auto current = static_cast<float>(glfwGetTime());
+        float delta        = current - last;
+        last               = current;
+
         glfw.Update();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -110,6 +117,14 @@ int main(int, char* argv[])
         transform.Position = { 0, sin(glfwGetTime()) * 0.1f, 0 };
         transform.Rotation = { glm::vec3(0, static_cast<float>(glfwGetTime()), 0) };
 
+        if (glfwGetKey(glfw.GetWindow(), GLFW_KEY_W))
+            view.Position += glm::vec3(0, 0, 1) * delta;
+        if (glfwGetKey(glfw.GetWindow(), GLFW_KEY_S))
+            view.Position += glm::vec3(0, 0, -1) * delta;
+        if (glfwGetKey(glfw.GetWindow(), GLFW_KEY_A))
+            view.Position += glm::vec3(1, 0, 0) * delta;
+        if (glfwGetKey(glfw.GetWindow(), GLFW_KEY_D))
+            view.Position += glm::vec3(-1, 0, 0) * delta;
 
         glm::mat4 projection;
         projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
