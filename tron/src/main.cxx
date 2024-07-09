@@ -21,16 +21,53 @@ int main(int, char* argv[])
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
+#define H 0.5f
+
+
     GLfloat points[] = {
-        // positions         // colors           // texture coords
-        0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-       -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-       -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
+        // vert      // colors  // texture coords
+
+        // +X
+        +H, +H, -H, 1, 1, 1, 1, 1,
+        +H, -H, -H, 1, 1, 1, 1, 0,
+        +H, -H, +H, 1, 1, 1, 0, 0,
+        +H, +H, +H, 1, 1, 1, 0, 1,
+
+        -H, +H, +H, 1, 1, 1, 1, 1,
+        -H, -H, +H, 1, 1, 1, 1, 0,
+        -H, -H, -H, 1, 1, 1, 0, 0,
+        -H, +H, -H, 1, 1, 1, 0, 1,
+
+        // +Y
+        +H, +H, -H, 1, 1, 1, 1, 1,
+        +H, +H, +H, 1, 1, 1, 1, 0,
+        -H, +H, +H, 1, 1, 1, 0, 0,
+        -H, +H, -H, 1, 1, 1, 0, 1,
+
+        -H, -H, -H, 1, 1, 1, 1, 1,
+        -H, -H, +H, 1, 1, 1, 1, 0,
+        +H, -H, +H, 1, 1, 1, 0, 0,
+        +H, -H, -H, 1, 1, 1, 0, 1,
+
+        // +Z
+        +H, +H, +H, 1, 1, 1, 1, 1,
+        +H, -H, +H, 1, 1, 1, 1, 0,
+        -H, -H, +H, 1, 1, 1, 0, 0,
+        -H, +H, +H, 1, 1, 1, 0, 1,
+
+        -H, +H, -H, 1, 1, 1, 1, 1,
+        -H, -H, -H, 1, 1, 1, 1, 0,
+        +H, -H, -H, 1, 1, 1, 0, 0,
+        +H, +H, -H, 1, 1, 1, 0, 1,
     };
+#define RECT_INDEICE(n) 0+4*n, 1+4*n, 3+4*n, 1+4*n, 2+4*n, 3+4*n
     GLuint indices[] = {
-        0, 1, 3,
-        1, 2, 3
+        RECT_INDEICE(0),
+        RECT_INDEICE(1),
+        RECT_INDEICE(2),
+        RECT_INDEICE(3),
+        RECT_INDEICE(4),
+        RECT_INDEICE(5),
     };
 
     auto tex = tron::Texture("assets/wall.jpg", tron::TF_MIPMAP);
@@ -59,6 +96,8 @@ int main(int, char* argv[])
 
     program.Use();
 
+    tron::Transform view;
+
     while (!glfwWindowShouldClose(glfw.GetWindow()))
     {
         glfw.Update();
@@ -71,19 +110,19 @@ int main(int, char* argv[])
         transform.Position = { 0, sin(glfwGetTime()) * 0.1f, 0 };
         transform.Rotation = { glm::vec3(0, static_cast<float>(glfwGetTime()), 0) };
 
-        glm::mat4 view = glm::mat4(1.0f);
-        // note that we're translating the scene in the reverse direction of where we want to move
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
         glm::mat4 projection;
         projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
 
-        program.GetUniform<glm::mat4>("vTransform") = projection * view * static_cast<glm::mat4>(transform);
+        program.GetUniform<glm::mat4>("vTransform") =
+            projection
+            * static_cast<glm::mat4>(view)
+            * static_cast<glm::mat4>(transform);
 
         vao.Use();
         ebo.Use();
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, std::size(indices), GL_UNSIGNED_INT, nullptr);
     }
 
     return 0;
