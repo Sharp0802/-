@@ -1,4 +1,5 @@
 #include "buffer.h"
+#include "cameratransform.h"
 #include "pch.h"
 #include "glew.h"
 #include "glfw.h"
@@ -27,6 +28,8 @@ int main(int, char* argv[])
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
     glFrontFace(GL_CCW);
+
+    glfwSetInputMode(glfw.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 #define H 0.5f
 
@@ -104,13 +107,28 @@ int main(int, char* argv[])
     program.Use();
 
     tron::Transform view;
+    tron::CameraTransform camera;
+    float fov = 45;
 
     while (!glfwWindowShouldClose(glfw.GetWindow()))
     {
         static float last;
-        const auto current = static_cast<float>(glfwGetTime());
-        float delta        = current - last;
-        last               = current;
+        const auto   current = static_cast<float>(glfwGetTime());
+        float        delta   = current - last;
+        last                 = current;
+
+        static auto lastCursor = glfw.Cursor;
+        auto cursorOffset = glfw.Cursor - lastCursor;
+        lastCursor = glfw.Cursor;
+
+        constexpr float sensitivity = 0.001f;
+        cursorOffset *= sensitivity;
+
+        fov -= glfw.Scroll;
+        if (fov < 1)
+            fov = 1;
+        else if (fov > 75)
+            fov = 75;
 
         glfw.Update();
 
@@ -119,25 +137,40 @@ int main(int, char* argv[])
 
 
         tron::Transform transform;
-        transform.Position = { 0, sin(glfwGetTime()) * 0.1f, 0 };
-        transform.Rotation = { glm::vec3(0, static_cast<float>(glfwGetTime()), 0) };
+        transform.Position = { 0, 0, -3 };
+
+        camera.Yaw += cursorOffset.x;
+        camera.Pitch += cursorOffset.y;
+
+        if (camera.Pitch > glm::radians(85.f))
+            camera.Pitch = glm::radians(85.f);
+        else if (camera.Pitch < -glm::radians(85.f))
+            camera.Pitch = -glm::radians(85.f);
+
+        glm::vec3 up = glm::vec3(0, 1, 0);
 
         if (glfwGetKey(glfw.GetWindow(), GLFW_KEY_W))
-            view.Position += glm::vec3(0, 0, 1) * delta;
+            view.Position += camera.Front * delta;
         if (glfwGetKey(glfw.GetWindow(), GLFW_KEY_S))
-            view.Position += glm::vec3(0, 0, -1) * delta;
+            view.Position -= camera.Front * delta;
         if (glfwGetKey(glfw.GetWindow(), GLFW_KEY_A))
-            view.Position += glm::vec3(1, 0, 0) * delta;
+            view.Position -= normalize(cross(camera.Front, up)) * delta;
         if (glfwGetKey(glfw.GetWindow(), GLFW_KEY_D))
-            view.Position += glm::vec3(-1, 0, 0) * delta;
+            view.Position += normalize(cross(camera.Front, up)) * delta;
+
+        if (glfwGetKey(glfw.GetWindow(), GLFW_KEY_SPACE))
+            view.Position += glm::vec3(0, 1, 0) * delta;
+        if (glfwGetKey(glfw.GetWindow(), GLFW_KEY_LEFT_SHIFT))
+            view.Position += glm::vec3(0, -1, 0) * delta;
+
+        glm::mat4 viewMat = glm::lookAt(view.Position, view.Position + camera.Front, up);
 
         glm::mat4 projection;
-        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-
+        projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
 
         program.GetUniform<glm::mat4>("vTransform") =
             projection
-            * static_cast<glm::mat4>(view)
+            * static_cast<glm::mat4>(viewMat)
             * static_cast<glm::mat4>(transform);
 
         vao.Use();
