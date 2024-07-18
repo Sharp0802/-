@@ -1,5 +1,7 @@
 #include "cameratransform.h"
 
+#include "screen.h"
+
 namespace tron::obj
 {
     CameraTransform::CameraTransform(class GameObject* object)
@@ -14,9 +16,10 @@ namespace tron::obj
     {
         constexpr auto up = glm::vec3(0, 1, 0);
 
+        const glm::vec2 screen = Screen::GetSize();
         const auto projection = glm::perspective(
             glm::radians(FoV),
-            800.0f / 600.0f,
+            screen.x / screen.y,
             0.1f,
             100.0f);
         const auto view = lookAt(Position, Position + Front, up);
