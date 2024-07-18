@@ -1,12 +1,15 @@
 #include "buffer.h"
+#include "cameramovement.h"
 #include "cameratransform.h"
 #include "pch.h"
 #include "glew.h"
 #include "glfw.h"
 #include "global.h"
+#include "input.h"
 #include "shader.h"
 #include "texture.h"
-#include "transform.h"
+#include "ttime.h"
+#include "../obj/transform.h"
 #include "vertexarray.h"
 
 int main(int, char* argv[])
@@ -30,6 +33,8 @@ int main(int, char* argv[])
     glFrontFace(GL_CCW);
 
     glfwSetInputMode(glfw.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    tron::Input::SetContext(&glfw);
 
 #define H 0.5f
 
@@ -106,12 +111,38 @@ int main(int, char* argv[])
 
     program.Use();
 
+    /*
     tron::Transform view;
     tron::CameraTransform camera;
     float fov = 45;
+    */
+
+    tron::GameObject cube;
+    cube.AddComponent<tron::obj::Transform>();
+
+    tron::GameObject camera;
+    camera.AddComponent<tron::obj::CameraTransform>();
+    camera.AddComponent<tron::obj::CameraMovement>();
+
+    cube.Awake();
+    camera.Awake();
+    cube.Start();
+    camera.Start();
+
+    auto cubeTransform = cube.GetComponent<tron::obj::Transform>();
+    auto cameraTransform = camera.GetComponent<tron::obj::CameraTransform>();
+
+    cubeTransform->Position = { 0, 0, 3 };
 
     while (!glfwWindowShouldClose(glfw.GetWindow()))
     {
+        glfw.Update();
+        tron::TimeManager::Update();
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(0, .3, .7, 1);
+
+        /*
         static float last;
         const auto   current = static_cast<float>(glfwGetTime());
         float        delta   = current - last;
@@ -129,13 +160,10 @@ int main(int, char* argv[])
             fov = 1;
         else if (fov > 75)
             fov = 75;
-
-        glfw.Update();
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glClearColor(0, .3, .7, 1);
+*/
 
 
+        /*
         tron::Transform transform;
         transform.Position = { 0, 0, -3 };
 
@@ -147,7 +175,7 @@ int main(int, char* argv[])
         else if (camera.Pitch < -glm::radians(85.f))
             camera.Pitch = -glm::radians(85.f);
 
-        glm::vec3 up = glm::vec3(0, 1, 0);
+        constexpr auto up = glm::vec3(0, 1, 0);
 
         if (glfwGetKey(glfw.GetWindow(), GLFW_KEY_W))
             view.Position += camera.Front * delta;
@@ -167,11 +195,14 @@ int main(int, char* argv[])
 
         glm::mat4 projection;
         projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
+        */
+
+        cube.Update();
+        camera.Update();
 
         program.GetUniform<glm::mat4>("vTransform") =
-            projection
-            * static_cast<glm::mat4>(viewMat)
-            * static_cast<glm::mat4>(transform);
+            static_cast<glm::mat4>(*cameraTransform)
+            * static_cast<glm::mat4>(*cubeTransform);
 
         vao.Use();
         ebo.Use();
