@@ -27,7 +27,7 @@ namespace
 
 namespace tron
 {
-    GLFW::GLFW()
+    GLFW::GLFW() : _scroll(0)
     {
         glfwSetErrorCallback([] (int code, const char* desc) {
             perr("GLFW ({}): {}", code, desc);
@@ -60,6 +60,17 @@ namespace tron
             this_->_width  = width;
             this_->_height = height;
         });
+        glfwSetCursorPosCallback(_window, [](GLFWwindow* window, const double x, const double y)
+        {
+            const auto this_ = static_cast<GLFW*>(glfwGetWindowUserPointer(window));
+            this_->_cursorX = static_cast<float>(x);
+            this_->_cursorY = -static_cast<float>(y);
+        });
+        glfwSetScrollCallback(_window, [](GLFWwindow* window, const double, const double y)
+        {
+            const auto this_ = static_cast<GLFW*>(glfwGetWindowUserPointer(window));
+            this_->_scroll += static_cast<float>(y);
+        });
 
         _bad = false;
     }
@@ -81,13 +92,24 @@ namespace tron
 
         UpdateFPSCounter(_window);
 
-        auto [width, height] = GetSize();
-        glViewport(0, 0, width, height);
+        glViewport(0, 0, Size.x, Size.y);
     }
 
-    std::pair<int, int> GLFW::GetSize() const
+    PROP_GETTER_DEF(GLFW, Size)
     {
-        return std::make_pair(_width, _height);
+        return { _width, _height };
+    }
+
+    PROP_GETTER_DEF(GLFW, Cursor)
+    {
+        return { _cursorX, _cursorY };
+    }
+
+    PROP_GETTER_DEF(GLFW, Scroll)
+    {
+        const auto v = _scroll;
+        _scroll = 0;
+        return v;
     }
 
     bool GLFW::operator!() const
