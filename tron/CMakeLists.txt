@@ -2,8 +2,8 @@ project(tron)
 
 find_package(OpenGL REQUIRED)
 
-file(GLOB SOURCES src/*.cxx)
-file(GLOB HEADERS *.h)
+file(GLOB SOURCES src/*.cxx obj/src/*.cxx)
+file(GLOB HEADERS *.h obj/*.h)
 file(GLOB_RECURSE ASSETS assets/*)
 
 ##############################
@@ -24,7 +24,7 @@ set_target_properties(tron PROPERTIES
     CXX_STANDARD 26
 )
 target_compile_options(tron PRIVATE -fmacro-prefix-map=${CMAKE_CURRENT_LIST_DIR}=. -fdeclspec -fms-extensions)
-target_include_directories(tron PRIVATE .)
+target_include_directories(tron PRIVATE . obj)
 target_precompile_headers(tron PRIVATE pch.h)
 target_link_libraries(tron PRIVATE
         GLEW::GLEW
