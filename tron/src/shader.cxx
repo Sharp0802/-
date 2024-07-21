@@ -63,7 +63,7 @@ namespace tron
             GLsizei           size        = BUFSIZ;
             glGetShaderInfoLog(*_shader, size, &size, log);
 
-            perr("[{}] Couldn't compile GL shader\n{}", *_shader, static_cast<char*>(log));
+            perr("[{}] Couldn't compile GL shader '{}'\n{}", *_shader, path, static_cast<char*>(log));
             _bad = true;
             return;
         }

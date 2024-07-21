@@ -10,7 +10,7 @@
 #include "shader.h"
 #include "texture.h"
 #include "ttime.h"
-#include "../obj/transform.h"
+#include "transform.h"
 #include "vertexarray.h"
 
 int main(int, char* argv[])
@@ -42,40 +42,38 @@ int main(int, char* argv[])
 
 
     GLfloat points[] = {
-        // vert      // colors  // texture coords
-
         // +X
-        +H, +H, -H, 1, 1, 1, 1, 1,
-        +H, -H, -H, 1, 1, 1, 1, 0,
-        +H, -H, +H, 1, 1, 1, 0, 0,
-        +H, +H, +H, 1, 1, 1, 0, 1,
+        +H, +H, -H, 1, 0, 0,
+        +H, -H, -H, 1, 0, 0,
+        +H, -H, +H, 1, 0, 0,
+        +H, +H, +H, 1, 0, 0,
 
-        -H, +H, +H, 1, 1, 1, 1, 1,
-        -H, -H, +H, 1, 1, 1, 1, 0,
-        -H, -H, -H, 1, 1, 1, 0, 0,
-        -H, +H, -H, 1, 1, 1, 0, 1,
+        -H, +H, +H, -1, 0, 0,
+        -H, -H, +H, -1, 0, 0,
+        -H, -H, -H, -1, 0, 0,
+        -H, +H, -H, -1, 0, 0,
 
         // +Y
-        +H, +H, -H, 1, 1, 1, 1, 1,
-        +H, +H, +H, 1, 1, 1, 1, 0,
-        -H, +H, +H, 1, 1, 1, 0, 0,
-        -H, +H, -H, 1, 1, 1, 0, 1,
+        +H, +H, -H, 0, 1, 0,
+        +H, +H, +H, 0, 1, 0,
+        -H, +H, +H, 0, 1, 0,
+        -H, +H, -H, 0, 1, 0,
 
-        -H, -H, -H, 1, 1, 1, 1, 1,
-        -H, -H, +H, 1, 1, 1, 1, 0,
-        +H, -H, +H, 1, 1, 1, 0, 0,
-        +H, -H, -H, 1, 1, 1, 0, 1,
+        -H, -H, -H, 0, -1, 0,
+        -H, -H, +H, 0, -1, 0,
+        +H, -H, +H, 0, -1, 0,
+        +H, -H, -H, 0, -1, 0,
 
         // +Z
-        +H, +H, +H, 1, 1, 1, 1, 1,
-        +H, -H, +H, 1, 1, 1, 1, 0,
-        -H, -H, +H, 1, 1, 1, 0, 0,
-        -H, +H, +H, 1, 1, 1, 0, 1,
+        +H, +H, +H, 0, 0, 1,
+        +H, -H, +H, 0, 0, 1,
+        -H, -H, +H, 0, 0, 1,
+        -H, +H, +H, 0, 0, 1,
 
-        -H, +H, -H, 1, 1, 1, 1, 1,
-        -H, -H, -H, 1, 1, 1, 1, 0,
-        +H, -H, -H, 1, 1, 1, 0, 0,
-        +H, +H, -H, 1, 1, 1, 0, 1,
+        -H, +H, -H, 0, 0, -1,
+        -H, -H, -H, 0, 0, -1,
+        +H, -H, -H, 0, 0, -1,
+        +H, +H, -H, 0, 0, -1,
     };
 #define RECT_INDEICE(n) 0+4*n, 1+4*n, 3+4*n, 1+4*n, 2+4*n, 3+4*n
     GLuint indices[] = {
@@ -98,24 +96,34 @@ int main(int, char* argv[])
     ebo.BufferData(indices, sizeof indices);
 
     vbo.Use();
-    const auto vao = tron::VertexArray::Create<glm::vec3, glm::vec3, glm::vec2>();
+    const auto cubeVao = tron::VertexArray::Create<glm::vec3, glm::vec3>();
+    const auto lightSourceVao = tron::VertexArray::Create<glm::vec3, glm::vec3>();
 
-
-    const tron::Program program{
-        { "assets/sample.vert", tron::ST_Vertex },
-        { "assets/sample.frag", tron::ST_Fragment },
+    const tron::Program cubeProgram{
+        { "assets/lighting.vert", tron::ST_Vertex },
+        { "assets/lighting.frag", tron::ST_Fragment },
     };
-    if (!program)
+    if (!cubeProgram)
+    {
+        perr("Couldn't load GL program");
+        return 1;
+    }
+    const tron::Program lightSourceProgram{
+            { "assets/light-source.vert", tron::ST_Vertex },
+            { "assets/light-source.frag", tron::ST_Fragment },
+        };
+    if (!lightSourceProgram)
     {
         perr("Couldn't load GL program");
         return 1;
     }
 
-    program.Use();
-
 
     tron::GameObject cube;
     cube.AddComponent<tron::obj::Transform>();
+
+    tron::GameObject lightSource;
+    lightSource.AddComponent<tron::obj::Transform>();
 
     tron::GameObject camera;
     camera.AddComponent<tron::obj::CameraTransform>();
@@ -127,9 +135,12 @@ int main(int, char* argv[])
     camera.Start();
 
     auto cubeTransform = cube.GetComponent<tron::obj::Transform>();
+    auto lightSourceTransform = lightSource.GetComponent<tron::obj::Transform>();
     auto cameraTransform = camera.GetComponent<tron::obj::CameraTransform>();
 
-    cubeTransform->Position = { 0, 0, 3 };
+    cubeTransform->Position = { 0, -0.3f, 3 };
+    lightSourceTransform->Position = { 1, 0.3f, 2 };
+    lightSourceTransform->Scale = { 0.2f, 0.2f, 0.2f };
 
     while (!glfwWindowShouldClose(glfw.GetWindow()))
     {
@@ -142,11 +153,32 @@ int main(int, char* argv[])
         cube.Update();
         camera.Update();
 
-        program.GetUniform<glm::mat4>("vTransform") =
-            static_cast<glm::mat4>(*cameraTransform)
-            * static_cast<glm::mat4>(*cubeTransform);
+        /* Cube */
+        cubeProgram.Use();
 
-        vao.Use();
+        cubeProgram.GetUniform<glm::vec3>("fLightColor") = { 1, 1, 1 };
+        cubeProgram.GetUniform<glm::vec3>("fLightPosition") = lightSourceTransform->Position;
+        cubeProgram.GetUniform<glm::vec3>("fViewPosition") = cameraTransform->Position;
+
+        cubeProgram.GetUniform<glm::vec3>("fMaterial.Ambient") = glm::vec3{ 1, 0.5f, 0.31f };
+        cubeProgram.GetUniform<glm::vec3>("fMaterial.Diffuse") = { 1, 0.5f, 0.31f };
+        cubeProgram.GetUniform<glm::vec3>("fMaterial.Specular") = { 0.5f, 0.5f, 0.5f };
+        cubeProgram.GetUniform<float>("fMaterial.Shininess") = 32;
+
+        cubeProgram.GetUniform<glm::mat4>("vProjectionView") = *cameraTransform;
+        cubeProgram.GetUniform<glm::mat4>("vModel")      = *cubeTransform;
+
+        cubeVao.Use();
+        ebo.Use();
+        glDrawElements(GL_TRIANGLES, std::size(indices), GL_UNSIGNED_INT, nullptr);
+
+        /* Light source */
+        lightSourceProgram.Use();
+        lightSourceProgram.GetUniform<glm::mat4>("vTransform") =
+            static_cast<glm::mat4>(*cameraTransform)
+            * static_cast<glm::mat4>(*lightSourceTransform);
+
+        lightSourceVao.Use();
         ebo.Use();
         glDrawElements(GL_TRIANGLES, std::size(indices), GL_UNSIGNED_INT, nullptr);
     }
