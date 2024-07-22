@@ -4,7 +4,7 @@ const int LIGHT_DIRECTIONAL = 0;
 const int LIGHT_POINT = 1;
 const int LIGHT_SPOTLIGHT = 2;
 
-layout (std430) struct Light
+struct Light
 {
     int Mode;
 
