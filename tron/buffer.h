@@ -6,8 +6,10 @@ namespace tron
 {
     enum BufferType
     {
-        BT_Array        = GL_ARRAY_BUFFER,
-        BT_ElementArray = GL_ELEMENT_ARRAY_BUFFER
+        BT_Array         = GL_ARRAY_BUFFER,
+        BT_ElementArray  = GL_ELEMENT_ARRAY_BUFFER,
+        BT_Uniform       = GL_UNIFORM_BUFFER,
+        BT_ShaderStorage = GL_SHADER_STORAGE_BUFFER
     };
 
     enum BufferPolicy
@@ -33,5 +35,7 @@ namespace tron
         void BufferData(const void* data, size_t size);
 
         void Use() const;
+
+        void Use(uint32_t base) const;
     };
 }

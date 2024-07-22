@@ -29,4 +29,9 @@ namespace tron
     {
         glBindBuffer(_type, *_buffer);
     }
+
+    void Buffer::Use(uint32_t base) const
+    {
+        glBindBufferBase(_type, base, *_buffer);
+    }
 }

@@ -21,3 +21,8 @@
     vis: \
         PROP_GETTER(name) const { return PROP_AUTO_FIELD(name); } \
         PROP_SETTER(name) { PROP_AUTO_FIELD(name) = value; }
+
+#define __STRCAT(a, b) a##b
+#define _STRCAT(a, b) __STRCAT(a, b)
+
+#define DUMMY(nb) char _STRCAT(__dummy_, __COUNTER__)[(nb)]
