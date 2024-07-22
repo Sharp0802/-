@@ -6,12 +6,15 @@
 #include "glfw.h"
 #include "global.h"
 #include "input.h"
+#include "light.h"
+#include "material.h"
 #include "screen.h"
 #include "shader.h"
 #include "texture.h"
 #include "ttime.h"
 #include "transform.h"
 #include "vertexarray.h"
+
 
 int main(int, char* argv[])
 {
@@ -85,10 +88,6 @@ int main(int, char* argv[])
         RECT_INDEICE(5),
     };
 
-    auto tex = tron::Texture("assets/wall.jpg", tron::TF_MIPMAP);
-
-    tex.Use();
-
     tron::Buffer vbo(tron::BT_Array, tron::BP_Static | tron::BP_Draw);
     vbo.BufferData(points, sizeof points);
 
@@ -96,31 +95,28 @@ int main(int, char* argv[])
     ebo.BufferData(indices, sizeof indices);
 
     vbo.Use();
-    const auto cubeVao = tron::VertexArray::Create<glm::vec3, glm::vec3>();
+    const auto cubeVao        = tron::VertexArray::Create<glm::vec3, glm::vec3>();
     const auto lightSourceVao = tron::VertexArray::Create<glm::vec3, glm::vec3>();
 
     const tron::Program cubeProgram{
         { "assets/lighting.vert", tron::ST_Vertex },
         { "assets/lighting.frag", tron::ST_Fragment },
     };
-    if (!cubeProgram)
-    {
-        perr("Couldn't load GL program");
-        return 1;
-    }
     const tron::Program lightSourceProgram{
-            { "assets/light-source.vert", tron::ST_Vertex },
-            { "assets/light-source.frag", tron::ST_Fragment },
-        };
-    if (!lightSourceProgram)
+        { "assets/light-source.vert", tron::ST_Vertex },
+        { "assets/light-source.frag", tron::ST_Fragment },
+    };
+    if (!cubeProgram || !lightSourceProgram)
     {
         perr("Couldn't load GL program");
         return 1;
     }
-
 
     tron::GameObject cube;
     cube.AddComponent<tron::obj::Transform>();
+
+    tron::GameObject cube0;
+    cube0.AddComponent<tron::obj::Transform>();
 
     tron::GameObject lightSource;
     lightSource.AddComponent<tron::obj::Transform>();
@@ -130,17 +126,39 @@ int main(int, char* argv[])
     camera.AddComponent<tron::obj::CameraMovement>();
 
     cube.Awake();
+    cube0.Awake();
     camera.Awake();
     cube.Start();
+    cube0.Start();
     camera.Start();
 
-    auto cubeTransform = cube.GetComponent<tron::obj::Transform>();
+    auto cubeTransform        = cube.GetComponent<tron::obj::Transform>();
+    auto cube0Transform        = cube0.GetComponent<tron::obj::Transform>();
     auto lightSourceTransform = lightSource.GetComponent<tron::obj::Transform>();
-    auto cameraTransform = camera.GetComponent<tron::obj::CameraTransform>();
+    auto cameraTransform      = camera.GetComponent<tron::obj::CameraTransform>();
 
-    cubeTransform->Position = { 0, -0.3f, 3 };
-    lightSourceTransform->Position = { 1, 0.3f, 2 };
-    lightSourceTransform->Scale = { 0.2f, 0.2f, 0.2f };
+    cubeTransform->Position        = { 0, -0.3f, 3 };
+    cube0Transform->Position        = { 1, -0.3f, 0 };
+    lightSourceTransform->Position = { 0.5f, 0.3f, 1 };
+    lightSourceTransform->Scale    = { 0.2f, 0.2f, 0.2f };
+
+    tron::Buffer materialSsbo(tron::BT_ShaderStorage, tron::BP_Static | tron::BP_Draw);
+    tron::Material material(
+        32,
+        { 1, 0.5f, 0.31f },
+        { 1, 0.5f, 0.31f },
+        { 0.5f, 0.5f, 0.5f }
+    );
+    material.LoadOn(materialSsbo);
+
+    tron::Buffer lightSsbo(tron::BT_ShaderStorage, tron::BP_Static | tron::BP_Draw);
+    tron::PointLight light(
+        lightSourceTransform->Position,
+        { 1, 1, 1 }
+    );
+    light.AttenuationRange = 50;
+    light.LoadOn(lightSsbo);
+
 
     while (!glfwWindowShouldClose(glfw.GetWindow()))
     {
@@ -154,22 +172,21 @@ int main(int, char* argv[])
         camera.Update();
 
         /* Cube */
+        materialSsbo.Use(1);
+        lightSsbo.Use(2);
         cubeProgram.Use();
 
-        cubeProgram.GetUniform<glm::vec3>("fLightColor") = { 1, 1, 1 };
-        cubeProgram.GetUniform<glm::vec3>("fLightPosition") = lightSourceTransform->Position;
-        cubeProgram.GetUniform<glm::vec3>("fViewPosition") = cameraTransform->Position;
-
-        cubeProgram.GetUniform<glm::vec3>("fMaterial.Ambient") = glm::vec3{ 1, 0.5f, 0.31f };
-        cubeProgram.GetUniform<glm::vec3>("fMaterial.Diffuse") = { 1, 0.5f, 0.31f };
-        cubeProgram.GetUniform<glm::vec3>("fMaterial.Specular") = { 0.5f, 0.5f, 0.5f };
-        cubeProgram.GetUniform<float>("fMaterial.Shininess") = 32;
-
+        cubeProgram.GetUniform<int>("fLightCount") = 1;
+        cubeProgram.GetUniform<glm::vec3>("fViewPosition")   = cameraTransform->Position;
         cubeProgram.GetUniform<glm::mat4>("vProjectionView") = *cameraTransform;
-        cubeProgram.GetUniform<glm::mat4>("vModel")      = *cubeTransform;
 
         cubeVao.Use();
         ebo.Use();
+
+        cubeProgram.GetUniform<glm::mat4>("vModel")          = *cubeTransform;
+        glDrawElements(GL_TRIANGLES, std::size(indices), GL_UNSIGNED_INT, nullptr);
+
+        cubeProgram.GetUniform<glm::mat4>("vModel")          = *cube0Transform;
         glDrawElements(GL_TRIANGLES, std::size(indices), GL_UNSIGNED_INT, nullptr);
 
         /* Light source */
